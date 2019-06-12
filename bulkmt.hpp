@@ -23,7 +23,7 @@ public:
 
 class Bulk: public Observable {
 	std::vector<Observer*> observers;	
-	std::ostream& fout;
+	std::ostream& output;
 	int time;
 
 public:
@@ -37,7 +37,7 @@ public:
 
 	bool is_last(const Observer* obs);
 
-	void process(); 
+	void process(std::ostream& out); 
 	int count(); 
 
 	void clear();

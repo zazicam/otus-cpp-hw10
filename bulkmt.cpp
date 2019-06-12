@@ -7,7 +7,7 @@
 
 // Class Bulk
 
-Bulk::Bulk() : fout(std::cout) {
+Bulk::Bulk() : output(std::cout) {
 }
 
 void Bulk::notify(int index) {
@@ -33,11 +33,11 @@ void Bulk::add(Observer *obs)  {
 }
 
 std::ostream& Bulk::get_output() {
-	return fout;
+	return output;
 }
 
 void Bulk::set_output(std::ostream& out) {
-	fout.tie(&out);
+	output.tie(&out);
 }
 
 bool Bulk::is_last(const Observer* obs) {
@@ -45,10 +45,12 @@ bool Bulk::is_last(const Observer* obs) {
 	return (obs == *last_iter);
 }
 
-void Bulk::process() {
+void Bulk::process(std::ostream& out) {
+
 	if(count()==0) return;
 
-	fout<<"bulk: ";
+	out<<"bulk: ";
+	set_output(out);
 	notify();
 
 	clear(); // clear processed observers

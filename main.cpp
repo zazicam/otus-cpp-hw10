@@ -13,13 +13,7 @@ void file_func(int i, Bulk& bulk) {
 }
 
 void process(Bulk& bulk) {
-	if(bulk.count()==0) return;
-
-	std::cout<<"bulk: ";
-	bulk.set_output(std::cout); // prepare empty output 
-	bulk.notify();
-
-	bulk.clear(); // clear processed observers
+	bulk.process(std::cout);
 }
 
 int main(int argc, char **argv) {
