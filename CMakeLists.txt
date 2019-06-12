@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(bulk VERSION 0.0.$ENV{TRAVIS_BUILD_NUMBER})
+project(bulkmt VERSION 0.0.$ENV{TRAVIS_BUILD_NUMBER})
 include_directories(${PROJECT_BINARY_DIR})
 
-add_executable(bulk main.cpp bulk.cpp)
+add_executable(bulkmt main.cpp bulkmt.cpp)
 
-set_target_properties(bulk PROPERTIES
+set_target_properties(bulkmt PROPERTIES
     CXX_STANDARD 14
     CXX_STANDARD_REQUIRED ON
     COMPILE_OPTIONS "-Wpedantic;-Wall;-Wextra"
@@ -14,9 +14,9 @@ set_target_properties(bulk PROPERTIES
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
-target_link_libraries(bulk Threads::Threads)
+target_link_libraries(bulkmt Threads::Threads)
 
-install(TARGETS bulk RUNTIME DESTINATION bin)
+install(TARGETS bulkmt RUNTIME DESTINATION bin)
 
 set(CPACK_GENERATOR DEB)
 
