@@ -19,10 +19,10 @@ void Bulk::notify(std::ostream& output)  {
 }
 
 void Bulk::add(Observer *obs)  {
-	// get time of first command in bulk
 	using namespace std::chrono;
-	if(count()==0) {
+	if(count()==0) {  // start new bulk
 		++id;
+		// get time of first command in the bulk
 		milliseconds ms = duration_cast< milliseconds > (
 			system_clock::now().time_since_epoch()
 		);
