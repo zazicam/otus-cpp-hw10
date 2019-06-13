@@ -4,6 +4,7 @@
 #include <thread>
 #include <fstream>
 #include <atomic>
+#include <mutex>
 #include <chrono>
 
 std::atomic<bool> block_ready(false);
@@ -16,35 +17,37 @@ void log_func(Bulk& bulk) {
 	int block_count = 0;
 	while(!stop) {
 		if(block_ready && !log_done) {
-			++block_count;
-			command_count+=bulk.count();
 			bulk.print_to_log();
 			log_done = true;
+			++block_count;
+			command_count+=bulk.count();
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 	std::cout<<"log: "<<block_count<<" blocks, "<<command_count<<" commands."<<std::endl;
 }
 
-void file_func(Bulk& bulk) {
+std::mutex file_mutex;
+
+void file_func(int i, Bulk& bulk) {
 	int command_count = 0;
 	int block_count = 0;
 	while(!stop) {
+		std::lock_guard<std::mutex> guard{file_mutex};
 		if(block_ready && !file_done) {
-			++block_count;
-			command_count+=bulk.count();
 			bulk.print_to_file();
 			file_done = true;
+			++block_count;
+			command_count+=bulk.count();
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
-	std::cout<<"file: "<<block_count<<" blocks, "<<command_count<<" commands."<<std::endl;
+	std::cout<<"file"<<i<<": "<<block_count<<" blocks, "<<command_count<<" commands."<<std::endl;
 }
 
 int block_count = 0;
 
 void process(Bulk& bulk) {
-//	std::cout<<"block_count: "<<block_count<<std::endl;
 	if(bulk.count()>0) {
 		log_done = false;
 		file_done = false;
@@ -68,7 +71,8 @@ int main(int argc, char **argv) {
 	Bulk bulk;
 	
 	std::thread log(log_func, std::ref(bulk));
-	std::thread file(file_func, std::ref(bulk));
+	std::thread file1(file_func, 1, std::ref(bulk));
+	std::thread file2(file_func, 2, std::ref(bulk));
 
 	int level = 0;
 	
@@ -103,7 +107,8 @@ int main(int argc, char **argv) {
 
 	stop = true;
 	log.join();
-	file.join();
+	file1.join();
+	file2.join();
 
 	return 0;
 }
