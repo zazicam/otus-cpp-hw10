@@ -7,29 +7,43 @@
 #include <chrono>
 
 std::atomic<bool> block_ready(false);
-
-std::atomic<bool> log_ready(true);
-std::atomic<bool> file_ready(true);
+std::atomic<bool> stop(false);
+std::atomic<bool> log_done(false);
+std::atomic<bool> file_done(false);
 
 void log_func(Bulk& bulk) {
-	while( !block_ready )
+	int command_count = 0;
+	int block_count = 0;
+	while(!stop) {
+		if(block_ready && !log_done) {
+			bulk.print_to_log();
+			log_done = true;
+		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-	bulk.print_to_log();
-	log_ready = true;
+	}
+	std::cout<<"log: "<<block_count<<" blocks, "<<command_count<<" commands."<<std::endl;
 }
 
 void file_func(Bulk& bulk) {
-	while( !block_ready )
+	int command_count = 0;
+	int block_count = 0;
+	while(!stop) {
+		if(block_ready && !file_done) {
+			bulk.print_to_file();
+			file_done = true;
+		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-	bulk.print_to_file();
-	file_ready = true;
+	}
+	std::cout<<"file: "<<block_count<<" blocks, "<<command_count<<" commands."<<std::endl;
 }
 
 void process(Bulk& bulk) {
-	while( !(log_ready && file_ready) )
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-		
+	log_done = false;
+	file_done = false;
 	block_ready = true;
+	while( !(log_done && file_done) )
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	bulk.clear();
 }
 
 int main(int argc, char **argv) {
@@ -76,6 +90,7 @@ int main(int argc, char **argv) {
 
 	std::cout<<"main: "<<line_count<<" lines, "<<command_count<<" commands, "<<block_count<<" blocks."<<std::endl;
 
+	stop = true;
 	log.join();
 	file.join();
 
