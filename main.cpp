@@ -16,6 +16,8 @@ void log_func(Bulk& bulk) {
 	int block_count = 0;
 	while(!stop) {
 		if(block_ready && !log_done) {
+			++block_count;
+			command_count+=bulk.count();
 			bulk.print_to_log();
 			log_done = true;
 		}
@@ -29,6 +31,8 @@ void file_func(Bulk& bulk) {
 	int block_count = 0;
 	while(!stop) {
 		if(block_ready && !file_done) {
+			++block_count;
+			command_count+=bulk.count();
 			bulk.print_to_file();
 			file_done = true;
 		}
@@ -37,13 +41,20 @@ void file_func(Bulk& bulk) {
 	std::cout<<"file: "<<block_count<<" blocks, "<<command_count<<" commands."<<std::endl;
 }
 
+int block_count = 0;
+
 void process(Bulk& bulk) {
-	log_done = false;
-	file_done = false;
-	block_ready = true;
-	while( !(log_done && file_done) )
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-	bulk.clear();
+//	std::cout<<"block_count: "<<block_count<<std::endl;
+	if(bulk.count()>0) {
+		log_done = false;
+		file_done = false;
+		block_ready = true;
+		while( !(log_done && file_done) )
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+		bulk.clear();
+		++block_count;
+	}
 }
 
 int main(int argc, char **argv) {
@@ -53,8 +64,6 @@ int main(int argc, char **argv) {
 
 	int line_count = 0;
 	int command_count = 0;
-	int block_count = 0;
-
 	
 	Bulk bulk;
 	
@@ -65,6 +74,7 @@ int main(int argc, char **argv) {
 	
 	std::string line;
 	while(getline(std::cin, line)) {
+		++line_count;
 		if(line=="{") {
 			if(level==0)
 				process(bulk);
@@ -77,6 +87,7 @@ int main(int argc, char **argv) {
 				process(bulk);
 		}
 		else {
+			++command_count;
 			bulk.add(new Command(line));
 			if(level==0 && bulk.count()==N)
 				process(bulk);
