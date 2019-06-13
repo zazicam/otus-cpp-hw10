@@ -2,21 +2,19 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <chrono>
 
 // Class Bulk
 
-Bulk::Bulk() : output(std::cout) {
+Bulk::Bulk() {
+	id = 0;
 }
 
-void Bulk::notify(int index) {
-	observers[index]->handle(*this);
-}
-
-void Bulk::notify()  {
+void Bulk::notify(std::ostream& output)  {
 	for(auto obs : observers) {
-		obs->handle(*this);
+		obs->handle(*this, output);
 	}
 }
 
@@ -24,6 +22,7 @@ void Bulk::add(Observer *obs)  {
 	// get time of first command in bulk
 	using namespace std::chrono;
 	if(count()==0) {
+		++id;
 		milliseconds ms = duration_cast< milliseconds > (
 			system_clock::now().time_since_epoch()
 		);
@@ -32,28 +31,24 @@ void Bulk::add(Observer *obs)  {
 	observers.push_back(obs);
 }
 
-std::ostream& Bulk::get_output() {
-	return output;
-}
-
-void Bulk::set_output(std::ostream& out) {
-	output.tie(&out);
-}
-
 bool Bulk::is_last(const Observer* obs) {
 	auto last_iter = --observers.end();	
 	return (obs == *last_iter);
 }
 
-void Bulk::process(std::ostream& out) {
-
+void Bulk::print_to_log() {
 	if(count()==0) return;
+	std::cout<<"bulk: ";
+	notify(std::cout);
+}
 
-	out<<"bulk: ";
-	set_output(out);
-	notify();
-
-	clear(); // clear processed observers
+void Bulk::print_to_file() {
+	if(count()==0) return;
+	std::stringstream filename;
+	filename<<"bulk"<<time<<"_"<<id<<".log";
+	std::ofstream file(filename.str());
+	file<<"bulk: ";
+	notify(file);
 }
 
 int Bulk::count() {
@@ -73,10 +68,10 @@ Bulk::~Bulk() { clear(); }
 
 Command::Command(std::string name) : name(name) {}
 
-void Command::handle(Observable& subject)  {
+void Command::handle(Observable& subject, std::ostream& output) {
 	Bulk& bulk = dynamic_cast<Bulk&>(subject);
 	std::string separator = (bulk.is_last(this))? "\n" : ", ";
-	bulk.get_output() << name << separator;
+	output << name << separator;
 }
 
 Command::~Command()  {}
