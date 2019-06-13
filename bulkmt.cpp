@@ -8,8 +8,7 @@
 
 // Class Bulk
 
-Bulk::Bulk() {
-	id = 0;
+Bulk::Bulk() : id(0) {
 }
 
 void Bulk::notify(std::ostream& output)  {
