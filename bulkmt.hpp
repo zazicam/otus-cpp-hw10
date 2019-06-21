@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <ostream>
+#include <memory>
 
 class Observable;
 
@@ -21,7 +22,7 @@ public:
 //------------------------------------------------------------
 
 class Bulk: public Observable {
-	std::vector<Observer*> observers;
+	std::vector<std::shared_ptr<Observer>> observers;
 	int id;
 	int time;
 

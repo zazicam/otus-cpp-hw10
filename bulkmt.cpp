@@ -27,12 +27,12 @@ void Bulk::add(Observer *obs)  {
 		);
 		time = ms.count();
 	}
-	observers.push_back(obs);
+	observers.emplace_back(obs);
 }
 
 bool Bulk::is_last(const Observer* obs) {
 	auto last_iter = --observers.end();	
-	return (obs == *last_iter);
+	return (obs == last_iter->get());
 }
 
 void Bulk::print_to_log() {
@@ -55,8 +55,6 @@ int Bulk::count() {
 }
 
 void Bulk::clear() {
-	for(auto obs : observers)
-		delete obs;
 	observers.clear();
 }
 
