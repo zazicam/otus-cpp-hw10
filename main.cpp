@@ -5,7 +5,7 @@
 #include <mutex>
 #include <chrono>
 
-#include "bulkmt.hpp"
+#include "bulk.hpp"
 #include "command.hpp"
 
 std::atomic<bool> block_ready(false);

@@ -4,8 +4,7 @@
 #include <string>
 #include <chrono>
 
-#include "bulkmt.hpp"
-#include "command.hpp"
+#include "bulk.hpp"
 
 // Class Bulk
 
@@ -60,16 +59,3 @@ void Bulk::clear() {
 }
 
 Bulk::~Bulk() { clear(); }
-// -------------------------------------------------------------
-
-// Class Command
-
-Command::Command(std::string& name) : name(name) {}
-
-void Command::handle(Observable& subject, std::ostream& output) {
-	Bulk& bulk = dynamic_cast<Bulk&>(subject);
-	const std::string separator = (bulk.is_last(this))? "\n" : ", ";
-	output << name << separator;
-}
-
-Command::~Command()  {}

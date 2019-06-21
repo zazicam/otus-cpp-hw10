@@ -3,7 +3,11 @@ cmake_minimum_required(VERSION 3.2)
 project(bulkmt VERSION 0.0.$ENV{TRAVIS_BUILD_NUMBER})
 include_directories(${PROJECT_BINARY_DIR})
 
-add_executable(bulkmt main.cpp bulkmt.cpp)
+add_executable(bulkmt
+	main.cpp
+	bulk.cpp
+	command.cpp
+)
 
 set_target_properties(bulkmt PROPERTIES
     CXX_STANDARD 14
