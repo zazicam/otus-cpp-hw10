@@ -1,10 +1,11 @@
-#include "bulkmt.hpp"
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <chrono>
+
+#include "bulkmt.hpp"
+#include "command.hpp"
 
 // Class Bulk
 

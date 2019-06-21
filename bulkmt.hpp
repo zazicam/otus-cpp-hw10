@@ -4,22 +4,8 @@
 #include <ostream>
 #include <memory>
 
-class Observable;
-
-class Observer {
-public:
-	virtual void handle(Observable& subject, std::ostream& output) = 0;
-	virtual ~Observer() {}
-};
-//------------------------------------------------------------
-
-class Observable {
-public:
-	virtual void notify(std::ostream& output) = 0;
-	virtual void add(Observer *obs) = 0;
-	virtual ~Observable() {}
-};
-//------------------------------------------------------------
+#include "observer.hpp"
+#include "observable.hpp"
 
 class Bulk: public Observable {
 	std::vector<std::shared_ptr<Observer>> observers;
@@ -40,13 +26,4 @@ public:
 
 	void clear();
 	~Bulk();
-};
-//------------------------------------------------------------
-
-class Command: public Observer {
-	std::string name;
-public:
-	explicit Command(std::string& name);
-	virtual void handle(Observable& subject, std::ostream& output) override;
-	virtual ~Command() override;
 };
