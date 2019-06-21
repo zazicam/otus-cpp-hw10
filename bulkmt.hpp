@@ -36,7 +36,7 @@ public:
 	void print_to_log(); 
 	void print_to_file(); 
 
-	int count(); 
+	size_t count() const; 
 
 	void clear();
 	~Bulk();
@@ -46,7 +46,7 @@ public:
 class Command: public Observer {
 	std::string name;
 public:
-	Command(std::string name);
+	explicit Command(std::string& name);
 	virtual void handle(Observable& subject, std::ostream& output) override;
 	virtual ~Command() override;
 };

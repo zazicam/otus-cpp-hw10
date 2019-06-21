@@ -61,7 +61,7 @@ void process(Bulk& bulk) {
 }
 
 int main(int argc, char **argv) {
-	int N = 3;
+	size_t N = 3;
 	if(argc>=2)
 		N = atoi(argv[1]);
 

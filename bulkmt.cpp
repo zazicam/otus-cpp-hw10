@@ -50,7 +50,7 @@ void Bulk::print_to_file() {
 	notify(file);
 }
 
-int Bulk::count() {
+size_t Bulk::count() const {
 	return observers.size();
 }
 
@@ -63,11 +63,11 @@ Bulk::~Bulk() { clear(); }
 
 // Class Command
 
-Command::Command(std::string name) : name(name) {}
+Command::Command(std::string& name) : name(name) {}
 
 void Command::handle(Observable& subject, std::ostream& output) {
 	Bulk& bulk = dynamic_cast<Bulk&>(subject);
-	std::string separator = (bulk.is_last(this))? "\n" : ", ";
+	const std::string separator = (bulk.is_last(this))? "\n" : ", ";
 	output << name << separator;
 }
 
